@@ -1,0 +1,616 @@
+curso angular 2
+
+SECTION 1
+	1)INSTALL CLI(Comand line interface)
+		npm install -g angular-cli
+
+	2)CREATE NEW PROJECT
+		ng new project-name
+	
+	3)START SERVER
+		ng serve(this watches for changes and restarts)
+
+	4)PROJECT STRUCTURE
+		src
+		----app -> app files
+			----1)app.component.css -> component css
+			----2)app.component.html -> component html
+			----3)app.component.spec.ts -> code for unit testing
+			----4)app.component.ts -> the component code in typescript
+			----5)app.module.ts 
+			----6)index.ts -> make easier the import of other modules and etc
+			----7)enviroments -> enviroments configurations needed for compilation
+			otherfiles -> used by cli
+			----1)main.ts -> starts the application
+			----2)style.css -> global css file that applies to whole project
+		angular-cli.json -> cli configuration
+
+	5)TYPESCRIPT
+		Programming language that is compiled to javascript. Superset of javascript that adds types, modules, classes
+		Reason to use typescript instead of javascript:
+		General reasons:
+			-strong typing: allows security, compile time errors, IDE support like autocomplete/errors etc
+			-next gen javascript features: classes, import/export etc
+			-miss javascript features: interfaces, generics. the compiler checks this
+		Angular 2 reasons:
+			-most of the documentation and support are in typescript
+			-angular 2 uses it as main language
+
+		1) imports: import other module. never use the file extention. 
+			ex: import { MyOtherComponent } from 'myother.component';
+		2)decorators: leads to the execution of some code in background
+			ex: in angular 2, the decorator @Component takes a javascript object as argument and uses it to put metadata in a class
+				@Component({
+    				selector: 'app-root',
+    				templateUrl: 'app.component.html',
+    				styleUrls: ['app.component.css']
+				})
+		3)class: blueprint of javascript objects
+			ex:
+				export class AppComponent {
+    				title = 'I changed it!';
+				}
+		4)type: assign a type to properties and variables
+			ex: this garantee that only string can be assigned to "someProperty"
+				someProperty: string = 'Hello'; 
+
+SECTION 2
+	1)COMPONENTS
+    	selector: Name of the tag used in html. By convetion always use something that makes the name unique so it don't conflicts 
+    			  with new html tags or external libs and etc. If put # you can use as a id in html tags. It's a convention NOT to use the #.
+					ex: a) selector: "abc" (bad name choice) - selector: "ex-abc" (good name choice)
+    					b) selector: "ex-abc" -> <ex-abc></ex-abc>
+    					c) selector: "#ex-abc" -> <div id="ex-abc"></div>
+    	templateUrl: 'app.component.html',
+    	styleUrls: ['app.component.css']
+
+    2)HOW ANGULAR2 APP ITS STARTED
+    	a) main.ts is executed first: it bootstrap(starts) the application by executing a module. 
+    	b) the module is defined in the app.module.ts and it executes the component defined(app.component.ts)
+    	c) the component its executed and indentify the selector defined in the index.html and render the defined template in its place
+
+    3)MODULES
+    	its a class with the NgModel decorator
+    	declaration: array of components
+    	imports: with other modules it uses
+    	providers: for application wid services
+    	@NgModule({
+			declarations: [
+				AppComponent
+			],
+			imports: [
+				BrowserModule,
+			    FormsModule,
+			    HttpModule
+			],
+			providers: [],
+			bootstrap: [AppComponent]
+		})
+
+	4)TEMPLATES AND STYLES IN COMPONENTS
+		You can use a "template" declaration with a string containing the html code, or "templateUrl" to use a external file. By convention
+		its recomended to use template if the html have 3 or less lines and templateUrl if it have more than 3:
+		ex: template: `
+    					<h1>
+      						{{title}}
+    					</h1>
+  					  `
+  			templateUrl: './app.component.html'
+
+  		Its possible to do the same with style, using "stylesUrl" for an array of external css or "styles" for an array of strings with css code
+
+  	5)CREATING NEW COMPONENTS
+  		The CLI can help to create new components, you can also create the files for yourself but errors can happen if you forget to put 
+  		the components in the module imports and declaration for example, and the cli does this automatically.
+
+  		command: ng create component other
+  		creating new components in same folder with inline templates
+  		ng genarate component name-of-component --flat --inline-styles --inline-template
+  		ng g c name-of-component --flat -is -it
+
+  		--flat: dont create another folder
+  		--inline-styles: creates the component with "styles"
+  		--inline-template: create the component with "template"
+
+  	6)VIEW ENCAPSULATION AND STYLES
+  		Angular 2 components uses "shadow doms" for defining styles for especific components, but this wont work in some browsers
+  		so it generates ids for the specific tags and style for this id
+  		ex: 
+  			a component with template:
+  			<h1 _ngcontent-eux-1="">
+  				app works!
+			</h1>
+			and style:
+			h1 {
+  				color: green;
+			}
+
+			will generate this code on the browser:
+			on the <head>
+			<style>
+				h1[_ngcontent-eux-1] {
+  					color: green;
+				}
+			</style>
+			on the definied place:
+			<h1 _ngcontent-eux-1="">
+  				app works!
+			</h1>
+
+	7)INSERTING CONTENT IN A COMPONENT
+		Angular substitutes the code of a component tag with its content. To keep whats inside the components tag you must use 
+		the built-in tag ng ccontent: <ng-content></ng-content> in the component template
+
+	8)DATABINDING METHODS
+		Its a way that the view receives data from component controller and the controller listen to view interactions
+		a) String Interpolation
+			An string expression between double bracets
+			ex: build a string with "a" value + "bc"
+				{{ a + "bc"}}
+		b) Property binding
+			Send property to your DOM. 
+			ex:receive the value that will be used to enable or disable the button
+			   <button [disable]="expression">
+		c) Event binding
+			Listen to an event 
+			ex: listen to the event of clicking a button and execute the expression
+			    <button (click)="expression">
+		d) Two way databinding
+			try to reduce because its the worst in performance
+			ex: you edit the text box and the value goes to the code
+				<input [(ngModel)="model"]> -> model could be an object
+
+	9)STRING INTERPOLATION
+		If you put a string value, or a value/expression that can be cast to string between {{}}.
+		ex: x = "abc"
+			{{x}}
+
+	10)PROPERTY AND EVENT BINDING
+		DOM Properties
+			<img [src]="">
+			<img (click)="">
+		Directives Properties
+			<div [ngClass]="">
+			<div (ngSubmit)="">
+		Component Properties
+			<cmp [initObj]="">
+			<cmp (rndEvent)="">
+		Custom bindings
+			Property: @Input propertyName: string;
+			Event: @Output eventName = new EventEmitter();
+
+	11)PROPERTY BINDING
+		a)property binding:
+			in view:<input type="text" [value]="propertyBinding">
+			in component class: propertyBinding = "this is property Binding!"
+		b)diective property binding:
+			<p [ngClass]="{redBorder: true}">this is a directive property binding with ng class</p> -> redBorder is a ddefined css class
+			<p [ngStyle]="{color: 'green'}">this is a directive property binding with ng style</p>
+		c)custom property binding:
+			in view: <app-custom-binding [custombinding]="'this is custom property binding'"></app-custom-binding>
+			in app-custom-binding component class: import { Component, OnInit, Input } from '@angular/core';
+												   @Input() custombinding: string = "abc";
+
+	12)EVENT BINDING
+		a)event binding
+			in view: <button (click)="clickEventBinding()">test event binding</button>
+			in component class: clickEventBinding() {
+    								alert("this is event binding")
+  								}
+  		b) custom event binding
+			in view: <app-custom-event-binding (clicked)="onClickedCustomEventBinding($event)"></app-custom-event-binding
+			in component: onClickedCustomEventBinding(value: string) {
+						    alert(value);
+						  }
+			in app-custom-event-binding component template: <button (click)="clickCustomEventBinding()">test custom event binding</button>
+			in app-custom-event-binding component: @Output() clicked = new EventEmitter<string>();
+												   clickCustomEventBinding() {
+												      this.clicked.emit('this is custom event binding');
+												   }
+
+			EventEmitter<string> tells that clicked will fire an event with a string value
+			@Output() -> makes listenable outside the component
+			emit ->fires the event
+			onClickedCustomEventBinding will receive a string value that comes from a fired event($event)
+
+		c)another features
+			@Output can receive a parameter that means the name of the element to be used outside the component
+			ex: @Output('clickable') clicked = new EventEmitter<string>();
+				inside the component:clicked
+				in components that uses it: clickable
+
+			@Input and @Output decorators can be substituted to inputs or outputs array in the component decorator, but is not a recomended practice
+			ex: insted of using -> @Input() custombinding: string = "abc";
+				put -> inside the component decorator: inputs: ['custombinding']
+					   in class: custombinding: string = "abc";
+
+	13)TWO-WAY DATABINDING
+		Its slow and have some problems, thats why its not the default feature of angular 2. most of the time its not nescessary.
+		ex: a) <input type="text" [(ngModel)]="twowayobj.name">
+    		   <input type="text" [(ngModel)]="twowayobj.name">  
+			   twowayobj = {
+			   	   name: 'this is two way databinding',
+				   num: 10
+	  		   }
+	  		b) two way inplemented with one way
+	  		   <input type="text" [value]="x" (input)="x = $event.target.value" >
+    		   {{x}}
+    		   x = "teste";
+
+    14)COMPONENT LIFECYCLE
+    	The component lifecycle during its execution. To implement it you have to import a interace and implement it in the component class.
+    	1) OnChanges -> Before onInit and data bound property value change
+        2) OnInit -> On component initialization after first onchanges
+        3) DoCheck -> during after every angular2 change detection cycle
+        4) AfterContentInit -> after inserting content(if used ng-content)
+        5) AfterContentChecked -> after every check of inserted content
+        6) AfterViewInit -> after initializing the component view/childs views
+        7) AfterViewChecked -> After every check of the components views/child views
+        8) OnDestroy -> just after angular 2 destroys the directive/component
+
+    15)TEMPLATE ACCESS
+    	you can create local variable inside the templates
+    	<p #boundParagraph>{{templateAccess}}</p>
+		<p>{{boundParagraph.textContent}}</p>
+    	  
+    	@Input() templateAccess = 1000;
+  		@ViewChild('boundParagraph') boundParagraph: HTMLElement
+
+SECTION 3
+	1) CREATE CLASS
+		ng g cl class-name
+
+SECTION 4
+	1)DIRECTIVES
+		Directives are instructions to put in html.
+		Attribute Directives: interact with element to which the are applied to.
+			ex: a)ngClass
+				b)ngStyle
+			OBS: Directives do not need to be between [], but some of them do because the need parameters
+				 and the [] is used for property binding
+		Structural Directives: interact with current view container, changing DOM/HTML structure
+			ex: a)ngIf
+				b)ngFor
+
+	2)ATRIBUTE DIRECTIVES
+		a)ngClass:
+			in code -> default way: <div [ngClass]="{ngclasstest: true}">default way</div>
+					   shortcut way: <div [class.ngclasstest]="true">alternative way</div>
+			in css -> .ngclasstest { 
+					  	border: 3px solid blue; 
+						background-color: green;
+					  }
+		b)ngStyle: <div [ngStyle]="{'background-color': 'red'}"></div>
+
+	3)CUSTOM ATRIBUTE DIRECTIVES
+		a)create: ng g d directive-name
+		b)the selector inside de directive decorator is selected, the  default is with []
+			[a] -> element with 'a' atribute will be selcted
+			 a -> the tag will be selected
+			.a -> select by class
+		c) in view
+		   in code: <div secHighlight></div>
+		   		private elementRef: ElementRef;
+		   		constructor(elementRef: ElementRef) {
+		   			this.elementRef = elementRef;
+		   		}
+
+		   		angular provide a shortcut for the code above, by adding 'private' to the constructor parameter:
+		   		constructor(private elementRef: ElementRef) { }
+		ex: constructor(private elementRef: ElementRef) {
+    			this.elementRef.nativeElement.style.backgroundColor = 'green';
+  			}
+  			this method is not recomended  because it can cause a lot of problems, specially when runing in diferent
+  			enviroments, diferent from your.
+  			a better way to do this is using the angular2 class 'renderer':
+  			constructor(private elementRef: ElementRef, private renderer: Renderer) {
+    			this.renderer.setElementStyle(this.elementRef.nativeElement, 'background-color', 'green');
+  			}
+
+  	4)INTERACTIONS WITH ELEMENTS
+  		Use the HostListener to deal with interactions and the HostBinding to bind the attribute to element
+		private backgroundColor = 'white';
+
+		@HostListener('mouseenter') mouseover() {
+			this.backgroundColor = 'green';
+		};
+
+		@HostListener('mouseleave') mouseleave() {
+			this.backgroundColor = 'white';
+		};
+
+		@HostBinding('style.backgroundColor') get setColor() {
+		    return this.backgroundColor;
+		};
+		get -> typescript, defines thats read only
+		return will be applied to style.
+
+		@HostListener('click', ['$event']) onClick(event) {
+        	console.log("Event Target" + event.target);
+      	}
+      	listens to click event but also receives the $event object generate automatically
+      	to acess via the event parameter(you can choose its name)
+
+      	Directives can also have lifecycle, like ngOnInit and property bindings
+      	ex: in code: @Input('secMouseoverdir') overColor = 'green';
+  		             @Input() clickColor = 'red';
+  		    in view: <div [secMouseoverdir]="'yellow'" [clickColor]="'black'"></div>
+  		    You can do the property binding normally like the clickColor
+  		    or simplify the use sending the directve name inside Input: @Input('secMouseoverdir')
+  	
+  	5)STRUCTURAL DIRECTIVES
+  		a)ngIf: receives a boolean expression and shows/hides the html binded to it
+  				ex:<p *ngIf="showParagraph">This is ngIf directive!!</p>
+  				   Shows the <p> tag if showParagraph is true or hides it if false
+  		b)ngFor: iterates a list and generates tags like the one binded to it
+  			ex: private elements = ['a','b', 'c', 'd'];
+  			    <li *ngFor="let element of elements; let i = index">{{element}} - index:{{i}}</li>
+  			    creates elements.length <li> tags
+  			    uses the 'element' to access current object
+  			    uses the index reserved word to access the element index
+  		c)ngSwitch:
+  			ex: <div [ngSwitch]="value">
+				  <p *ngSwitchCase="10">10</p>
+				  <p *ngSwitchCase="100">100</p>
+				  <p *ngSwitchDefault>Default</p>
+				</div>
+				puts the paragraph that the values matches the ngSwitchCase.
+
+		OBS: USING * IS A SUGAR SINTAX TO MAKE THE DIRECTIVES EASIER AND MORE READABLE. BEHIND THE SCENE, ANGULAR 2 TRANSFORM THEN IN THE 
+			 NORMAL WAY.
+			 ex: a) <p *ngIf="showParagraph">This is ngIf directive!!</p>
+			 	 
+			 	    transform into: 
+				 	 
+				 	<template [ngIf]="showParagraph">
+				 		<p>This is ngIf directive!!</p>
+				 	</template>
+				 b) <div [ngSwitch]="value">
+					  <p *ngSwitchCase="10">10</p>
+					  <p *ngSwitchCase="100">100</p>
+					  <p *ngSwitchDefault>Default</p>
+					</div>
+
+					transform into:
+
+					<p [ngSwitch]="value">
+						<template ngSwitchWhen="10">10</template>
+						<template ngSwitchWhen="100">100</template>
+						<template ngSwitchDefault>Default</template>
+					</p>
+
+	6)CUSTOM STRUCTURAL DIRECTIVES
+		You can create your on structure directives, the same way attributes directives was created
+		ex: <p *secUnless="showParagraph">This is custom structure directive!!</p>
+			@Input() set secUnless(condition: boolean){
+				if(!condition){
+			    	this.vcRef.createEmbeddedView(this.templateRef);//insert the template  ref in the vcref
+			    } else {
+			    	this.vcRef.clear();//clear the vcRef
+			    }
+			}
+
+			constructor(private templateRef: TemplateRef<any>, private vcRef: ViewContainerRef) { }
+
+			this directives works as the oposite of ngIf
+			set -> triggered whenever the value is set
+			ViewContainerRef -> reference to the view container that holds the template(position where will be rendered)
+			TemplateRef -> reference to the template that the directive will be
+			createEmbeddedView -> take the postion of the view container and render the template passed to it
+			*secUnless -> the code described works just like the OBS section in last section but angular 2 creates the
+						  sugar syntax to it automatically, generating the *secUnless
+
+
+SECTION 5
+	1)SERVICES
+		a)Services are made so you Don't Repeat Yourself(DRY)
+			Insted of doing:
+				component1: field1: string, doSomething1();
+				component2: field2: string, doSomething2();
+				compoenet3: field3: string, doSomething1();
+			Do:
+				Service: field: string, doSomething1();
+				component1
+				component2: service.doSomething2();
+				compoenet3
+
+		b)Commom use for services:
+			a)Deal with data: local storage, acces to database on server, etc
+			b)Comunication of diferent classes
+			c)business logic used in more than one place
+
+	2)DEPENDECY INJECTION
+		Makes one class/service available in other component,directives,classes.
+		You can inject specifing it in the constructor, just need to specify how angular will create the service with a provider
+		ex: constructor(argument: Service) {}
+
+		to provide the dependecy by creating a instance in everyone that it was injected, you can use the code:
+			provide: [Service]
+		but if you want one instance, for example, when managing data you can have an array that is used in many places,
+		so you need to have only one instance so that all the parts is still in sync. There is 2 ways of doing it:
+			a)use the same provide method before, but in a parent component. All the child components will have access to the same instance
+			b)same as before but inject it in the highest level of the hierarchy by puting it in where the application is started:
+				On the module that is bootstraped in the providers array:
+				providers: [Service] 
+
+		a)pratical ex:
+			in template: <input type="text" #input>
+						 <button (click)="onLog(input.value)"></button>
+				#input -> referencce to the element
+				input.value -> accessing the value property of the element input(reference created by from the #input)
+			in code: 
+				in component decorator: providers: []
+				in class: constructor(private logService: LogService) {}
+						  onLog(value: string) {
+						  		this.logService.writeToLog(value);
+						  }
+
+		b)Service injected in another Service
+			In angular 2 you need to have metadata in the classes so you can inject.
+			So to inject a service in another you can put the @Injectable decorator:
+
+			@Injectable()
+			export class Service1 {
+				constructor(private service: Service2) {}
+			}
+
+	3)USING SERVICE FOR COMPONENT INTERACTION
+		in service:
+			pushedData = EventEmitter<string>();
+			pushData(value: Data) {
+				this.pushedData.emit(value);
+			}
+		in sender component:
+			sendData(value: string) {
+				this.service.pushData(value);
+			}
+		in receiver component:
+			value: string = '';
+			ngOnInit() {
+				this.service.pushedData.subscribe() {
+					data => this.value = data;
+				}
+			}
+
+		obs: subscribe -> observer that observes the eventEmitter. subscribe to the event  and get a notification when the event is emitted
+			 'data =>' -> callback  whenever data is emitted. after the arrow you can do a line like the exemple, or put code between {}
+			 			  or function() {}; this is a E6 sintax
+
+SECTION 6
+	1)ROUTING
+		Angular router parses url and identify routes
+
+	2)SETTING AND LOADING ROUTES
+		Create a file for routing and define a name for the routes group. Each group is an array of javascript objects having a
+		path attribute and a component attribute(component to be loaded). put in the imports in the module decorator
+		ex: in app.routing.ts:
+			const APP_ROUTES: Routes = [
+			  { path: 'user', component: UserComponent },// http:/address/user -> loads user component
+			  { path:'', component:HomeComponent } //http:/address -> loads the home component
+			];
+
+			export const routing = RouterModule.forRoot(APP_ROUTES);// for importing
+
+			in module file:
+			@NgModule({
+			    ...
+			    imports: [BrowserModule, routing],
+			    bootstrap: [AppComponent]
+			})
+
+			in the root component view, put the tag router-outlet to load the component. could be the whole view or nested in the html:
+			<div class="container">
+			    <div class="row">
+			        <div class="col-xs-10">
+			            <h1>Hello World!</h1>
+			            <router-outlet></router-outlet>
+			        </div>
+			    </div>
+			</div>
+
+	3)NAVIGATION WITH LINKS
+		a)If you add the traditional href tag the application will reload the page every time. To solve this problem you can use the 
+		routerLink directive as a property  binding, receiving an array that represents the url segments.
+		<a [routerLink]="['']">Home</a>
+		<a [routerLink]="['user']">User</a>
+
+		'user' -> calls currentUrl/user
+		'/user' -> calls rootUrl/user
+		'../user' -> calls previousUrl/user
+
+		b)to do imperative navigation(navigate via code instead of links) use the navigate with same url sintax:
+			<button (click)="onNavigate()">Go Home</button>
+		  	onNavigate() {
+    			this.router.navigate(['/']);
+  			}
+
+  		c)to use parameters, put after : so angular identifies is a parameter and substitutes it
+  			in view: <a [routerLink]="['user', id.value]">User</a>
+  			in router: { path: 'user/:id', component: UserComponent }
+
+  		d)to get route parameters: 
+  			inject: private activatedRoute: ActivatedRoute
+  			activatedRoute.snapshot.params['id']
+
+  			snapshot -> take the current state of the activated route
+
+  			if you get the params directly from the activatedRoute you get a observable, that listens to every change to the route
+  			so you can use a subscribe method to handle this.
+  			this.subscription = activatedRoute.params.subscribe(
+      			(param: any) => this.id = param['id']
+    		);
+    		obs: you can use the subscription object of the Subscription type to unsubscribe in the ngOnDestroy so you can 
+    		avoid memory leaks:
+    		  ngOnDestroy() {
+			    this.subscription.unsubscribe();
+			  }
+		e) to use query parameters you us query e the second argument in the navigate function, passing a javascript object
+			  this.router.navigate(['/'], {queryParams: {paramName: 100}});  
+		   to listen to changes is the same as before, also deals with the unsubscribe in the ondestroy method for memory leaks
+		   	  this.subscription = this.route.queryParams.subscribe(
+			  	queryParam => this.param = queryParam['analytics']
+			  );
+
+		f)to use the query parameters in the routerLink directive, just add the queryParameter in the tag
+			<a [routerLink]="['']" [queryParams]="{analytics: 500}">Home</a>
+
+		g)to use fragments, itss same sintax as query parameters. Fragments rolls page until the tag marked
+			    this.router.navigate(['/'], {queryParams: {analytics: 100}, fragment: 'section1'});
+			    or
+			    <a [routerLink]="['']" [queryParams]="{analytics: 500}" [fragment]="'section1'">Home</a>
+
+		h)when changing the links, you may want to preserv query params or fragments with preserveQueryParams or preserveFragments
+			in html:
+				<a [routerLink]="['']" [queryParams]="{analytics: 500}" preserveQueryParams="true" [fragment]="'section1'">Home</a>
+			in code:
+				this.router.navigate(['/'], {queryParams: {analytics: 100}, preserveQueryParams: true});
+
+	4) ROUTING CHILDS
+		You can have child routes by specifing it in the specific route then importing in the app routes
+		in specific route:
+			export const USER_ROUTES: Routes = [
+			  { path:'detail', component:UserDetailComponent },
+			  { path:'edit', component:UserEditComponent }
+			];
+		in app route add:
+			  { path: 'user/:id', component: UserComponent },
+			  { path: 'user/:id', component: UserComponent, children: USER_ROUTES}
+		obs: you must put the <router-outlet></router-outlet> in the child component template
+
+	5)REDIRECT ROUTES
+		
+		
+		a) To redirect paths use the redirectTo config:
+			{ path: 'user', redirectTo: '/user/1 },
+			obs: anything with 'user' is redirected 
+
+		b) To redirect only when the exactaly specified path is used, put the pathMatch config:
+			{ path: 'user', redirectTo: '/user/1', pathMatch: 'full' },
+
+		c) To work properly the most specific paths should be on top of the list.
+			...
+			{ path: 'user/:id', component: UserComponent },
+	  		{ path: 'user/:id', component: UserComponent, children: USER_ROUTES},
+	  		{ path: 'user', redirectTo: '/user/1', pathMatch: 'full' },
+	  		...
+
+	  	d) to match any not mapped path use **
+	  		{ path: '**', redirectTo: '/user/1', pathMatch: 'full' }
+
+	6)STYLE ACTIVE ROUTE LINKS
+		TODO
+
+	7)GUARDS
+		TODO
+
+
+
+
+SECTION 7
+SECTION 8
+SECTION 9
+
+SECTION 10
+	
+
+
